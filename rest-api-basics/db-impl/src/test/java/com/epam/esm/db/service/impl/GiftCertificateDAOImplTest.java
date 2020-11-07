@@ -2,15 +2,17 @@ package com.epam.esm.db.service.impl;
 
 import com.epam.esm.db.service.GiftCertificateDAO;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.annotation.Configuration;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@Configuration
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(locations = "classpath:testContext-db-impl.xml")
 public class GiftCertificateDAOImplTest {
 
 
@@ -18,7 +20,7 @@ public class GiftCertificateDAOImplTest {
     private GiftCertificateDAO giftCertificateDAO;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
 
         embeddedDatabase = new EmbeddedDatabaseBuilder()
                 .addDefaultScripts()
@@ -29,21 +31,18 @@ public class GiftCertificateDAOImplTest {
     }
 
     @AfterEach
-    void shutdown(){
+    void shutdown() {
         embeddedDatabase.shutdown();
     }
 
 
     @Test
-    void dbTest(){
+    public void dbTest() {
 
         giftCertificateDAO.findAll().forEach(giftCertificate -> System.out.println(giftCertificate.toString()));
 
 
-
-
     }
-
 
 
 }

@@ -70,7 +70,7 @@ public class TagDAOImpl implements TagDAO {
     public Optional<Tag> findById(Long id) {
 
         String query = String.format("select * from `%s` where id=`%s`", TABLE_NAME, id);
-        return Optional.ofNullable(jdbcTemplate.queryForObject(query, rowMapper));
+        return Optional.ofNullable(jdbcTemplate.queryForObject(query, rowMapper, id));
 
     }
 
@@ -89,6 +89,17 @@ public class TagDAOImpl implements TagDAO {
             throw new DAOException(String.format("certificate with id=`%s` wasn't delete", entity.getId()));
         }
 
+    }
+
+    @Override
+    public List<Tag> findAllCertificateTags(Long certificateId) {
+
+        String query = "select a.* from tag a \n" +
+                "                join gift_certificate_has_tag gt \n" +
+                "                on gt.tag_id = a.id \n" +
+                "                where gt.gift_certificate_id = ?";
+
+        return new ArrayList<>(jdbcTemplate.query(query, rowMapper, certificateId));
     }
 
     private void setRowMapper() {

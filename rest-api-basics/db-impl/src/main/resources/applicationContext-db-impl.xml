@@ -13,10 +13,10 @@
     <bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
         <property name="poolName" value="springHikariCP"/>
         <property name="maximumPoolSize" value="${max_pool_size}"/>
-        <property name="jdbcUrl" value="${url}"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/gift_certificates_db?useSSL=false&amp;serverTimezone=UTC"/>
         <property name="username" value="${name}"/>
         <property name="password" value="${password}"/>
-        <property name="dataSourceClassName" value="${class_name}"/>
+        <property name="driverClassName" value="${class_name}"/>
     </bean>
 
 

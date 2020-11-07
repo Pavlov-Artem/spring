@@ -9,8 +9,8 @@
 
   <mvc:annotation-driven/>
   <context:annotation-config/>
-  <context:component-scan base-package="by.kozik.mjc.mentoring.rest"/>
-  <context:component-scan base-package="by.kozik.mjc.mentoring.service"/>
+  <context:component-scan base-package="com.epam.esm.rest"/>
+  <context:component-scan base-package="com.epam.esm.service"/>
 
 
 </beans>

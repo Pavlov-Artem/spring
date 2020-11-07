@@ -1,13 +1,14 @@
 package com.epam.esm.db.service.impl;
 
 import com.epam.esm.db.data.GiftCertificate;
+import com.epam.esm.db.data.Tag;
 import com.epam.esm.db.service.DAOException;
 import com.epam.esm.db.service.GiftCertificateDAO;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
@@ -16,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Component
+@Repository
 public class GiftCertificateDAOImpl implements GiftCertificateDAO {
 
     private static final String TABLE_NAME = "gift_certificate";
@@ -65,7 +66,7 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     @Override
     public Optional<GiftCertificate> findById(Long id) {
 
-        String query = String.format("select * from `%s` where id=`%s`", TABLE_NAME, id);
+        String query = String.format("select * from `%s` where id=%s", TABLE_NAME, id);
         return Optional.ofNullable(jdbcTemplate.queryForObject(query, rowMapper));
 
     }
@@ -79,7 +80,7 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     @Override
     public void deleteCertificate(GiftCertificate entity) throws DAOException {
 
-        String query = String.format("delete from `%s` where id=?", TABLE_NAME);
+        String query = String.format("delete from `%s` where id=%s", TABLE_NAME, entity.getId());
         int rowsAffected = jdbcTemplate.update(query, entity.getId());
         if (rowsAffected == 0) {
             throw new DAOException(String.format("certificate with id=`%s` wasn't delete", entity.getId()));
@@ -97,6 +98,14 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
                 "                WHERE t.name IN (?)";
 
         return new ArrayList<>(jdbcTemplate.query(query, rowMapper, tagName));
+
+    }
+
+    @Override
+    public void addCertificateTags(List<Tag> tags, Long id) {
+
+        String query = "insert into gift_certificate_has_tag (gift_certificate_id,tag_id) values (?,?);";
+        tags.forEach(tag -> jdbcTemplate.update(query, tag.getId(), id));
 
     }
 
