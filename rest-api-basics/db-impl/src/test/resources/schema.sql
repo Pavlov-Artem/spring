@@ -21,14 +21,14 @@ CREATE TABLE IF NOT EXISTS tag
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS gift_certificate
 (
-    `id`               BIGINT(19)    NOT NULL AUTO_INCREMENT,
-    `name`             VARCHAR(100)  NOT NULL,
-    `description`      VARCHAR(2000) NOT NULL,
-    `price`            DECIMAL       NOT NULL,
-    `create_date`      TIMESTAMP     NOT NULL,
-    `last_update_date` TIMESTAMP     NOT NULL,
-    `duration`         INT     NOT NULL,
-    PRIMARY KEY (`id`)
+    id               BIGINT(19)    NOT NULL AUTO_INCREMENT,
+    name            VARCHAR(100)  NOT NULL,
+    description      VARCHAR(2000) NOT NULL,
+    price            DECIMAL       NOT NULL,
+    create_date      TIMESTAMP     NOT NULL,
+    last_update_date TIMESTAMP     NOT NULL,
+    duration         INT     NOT NULL,
+    PRIMARY KEY (id)
 );
 
 

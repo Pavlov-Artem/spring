@@ -4,18 +4,17 @@ import com.epam.esm.data.GiftCertificateCreateDto;
 import com.epam.esm.data.GiftCertificateDto;
 import com.epam.esm.db.service.DAOException;
 import com.epam.esm.service.GiftCertificatesService;
-import com.epam.esm.service.exceptions.EntityNotFoundException;
 import com.epam.esm.validation.GiftCertificatesCreateDtoValidator;
+import com.epam.esm.validation.ValidationException;
 import com.epam.esm.validation.ValidationResult;
 import com.epam.esm.validation.Validator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class GiftCertificateRestController {
@@ -25,84 +24,74 @@ public class GiftCertificateRestController {
 
     public GiftCertificateRestController(GiftCertificatesService giftCertificatesService) {
         this.giftCertificatesService = giftCertificatesService;
-
         certificateCreationValidator = new GiftCertificatesCreateDtoValidator();
     }
 
+    /**
+     * path ...host/certificates?search_param=value
+     * available search params:
+     * can be used in lower case
+     * @BY_TAG search certificate by tag name,
+     * @BY_NAME_PART search certificate by part of name,
+     * @BY_DESCRIPTION_PART search certificate by part of description;
+     * available sort params:
+     * @NAME_ASC
+     * @PRICE_ASC
+     * @NAME_DESC
+     * @NAME_DESC
+     **/
     @GetMapping("/certificates")
-    public List<GiftCertificateDto> all() {
-        return giftCertificatesService.getAllCertificates();
+    public List<GiftCertificateDto> all(@RequestParam(required = false) Map<String, String> params) {
+
+        return params.isEmpty() ? giftCertificatesService.getAllCertificates()
+                : giftCertificatesService.findCertificatesByCriteria(
+                        GiftCertificateQueryParametersMapper.mapSearchParams(params), GiftCertificateQueryParametersMapper.mapSortCriteria(params));
+
     }
 
 
     @GetMapping(value = "/certificates/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> getById(@PathVariable String id) {
+    public ResponseEntity<GiftCertificateDto> getById(@PathVariable Long id) throws DAOException {
 
-        try {
-            Long certificateId = Long.parseLong(id);
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(giftCertificateDtoToJson(giftCertificatesService.findById(certificateId)));
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(String.format("Certificate with id=%s not found", id));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Server error try again later");
-        }
+        return ResponseEntity.status(HttpStatus.OK).body(giftCertificatesService.findById(id));
 
     }
 
 
-//    @PutMapping("/employees/{id}")
-//    Employee replaceEmployee(@RequestBody Employee newEmployee, @PathVariable Long id) {
-//
-//        return repository.findById(id)
-//                .map(employee -> {
-//                    employee.setName(newEmployee.getName());
-//                    employee.setRole(newEmployee.getRole());
-//                    return repository.save(employee);
-//                })
-//                .orElseGet(() -> {
-//                    newEmployee.setId(id);
-//                    return repository.save(newEmployee);
-//                });
-//    }
+    @PutMapping("/certificates/{id}")
+    public ResponseEntity<String> updateCertificate(@RequestBody GiftCertificateCreateDto giftCertificateCreateDto, @PathVariable Long id) throws DAOException {
+
+        giftCertificatesService.updateCertificate(giftCertificateCreateDto, id);
+        return ResponseEntity.status(HttpStatus.CREATED).body("updated successfully");
+
+    }
 
     @PutMapping("/certificates")
-    public ResponseEntity<String> createCertificate(@RequestBody GiftCertificateCreateDto giftCertificateCreateDto) {
+    public ResponseEntity<String> createCertificate(@RequestBody GiftCertificateCreateDto giftCertificateCreateDto) throws DAOException {
 
         ValidationResult validationResult = certificateCreationValidator.validate(giftCertificateCreateDto);
         if (validationResult.isValid()) {
-            try {
-                giftCertificatesService.createCertificate(giftCertificateCreateDto);
-                return ResponseEntity.status(HttpStatus.CREATED)
-                        .body("Certificate successfully created");
-
-            } catch (DAOException e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body("Server error try again later");
-            }
+            giftCertificatesService.createCertificate(giftCertificateCreateDto);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body("Certificate successfully created");
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("bad request params");
-
+            throw new ValidationException("cannot create certificate because of invalid input data", validationResult);
         }
 
     }
 
-//    @DeleteMapping("/certificates/{id}")
-//    public ResponseEntity<String> removeCertificate(@PathVariable String id) {
-//
-//
-//
-//    }
+    @DeleteMapping(value = "/certificates/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> removeCertificate(@PathVariable Long id) {
 
+        try {
+            giftCertificatesService.removeCertificate(id);
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body("certificate was removed");
+        } catch (DAOException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("something went wrong");
+        }
 
-    private String giftCertificateDtoToJson(GiftCertificateDto giftCertificateDto) throws JsonProcessingException {
-
-        ObjectMapper mapper = new ObjectMapper();
-
-        return mapper.writeValueAsString(giftCertificateDto);
 
     }
 

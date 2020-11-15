@@ -2,23 +2,28 @@ package com.epam.esm.service;
 
 import com.epam.esm.data.GiftCertificateCreateDto;
 import com.epam.esm.data.GiftCertificateDto;
+import com.epam.esm.db.service.CertificateSearchCriteria;
+import com.epam.esm.db.service.CertificateSortCriteria;
 import com.epam.esm.db.service.DAOException;
-import com.epam.esm.service.exceptions.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public interface GiftCertificatesService {
 
     List<GiftCertificateDto> getAllCertificates();
 
-    GiftCertificateDto findById(Long id) throws EntityNotFoundException;
+    List<GiftCertificateDto> findCertificatesByCriteria(Map<CertificateSearchCriteria, String> criteriaMap, List<CertificateSortCriteria> sortCriteria);
+
+    GiftCertificateDto findById(Long id) throws DAOException;
 
     void createCertificate(GiftCertificateCreateDto giftCertificateDto) throws DAOException;
 
-    void removeCertificate(GiftCertificateDto giftCertificateDto);
+    void removeCertificate(Long id) throws DAOException;
 
+    void updateCertificate(GiftCertificateCreateDto giftCertificateCreateDto, Long id) throws DAOException;
 
 
 }

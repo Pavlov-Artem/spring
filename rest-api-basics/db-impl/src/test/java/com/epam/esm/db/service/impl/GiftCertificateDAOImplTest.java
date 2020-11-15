@@ -2,18 +2,19 @@ package com.epam.esm.db.service.impl;
 
 import com.epam.esm.db.service.GiftCertificateDAO;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(locations = "classpath:testContext-db-impl.xml")
-public class GiftCertificateDAOImplTest {
+
+@Configuration
+public class
+GiftCertificateDAOImplTest {
 
 
     private EmbeddedDatabase embeddedDatabase;
@@ -37,12 +38,43 @@ public class GiftCertificateDAOImplTest {
 
 
     @Test
-    public void dbTest() {
+    void findAll() {
 
-        giftCertificateDAO.findAll().forEach(giftCertificate -> System.out.println(giftCertificate.toString()));
+        int expectedSize = 5;
+        Assertions.assertEquals(expectedSize, giftCertificateDAO.findAll().size());
+
+    }
+
+    @Test
+    void findAllWithCriteria() {
+
 
 
     }
+//
+//    @Test
+//    void createEntity() {
+//    }
+//
+//    @Test
+//    void findById() {
+//    }
+//
+//    @Test
+//    void updateCertificate() {
+//    }
+//
+//    @Test
+//    void updateCertificateTags() {
+//    }
+//
+//    @Test
+//    void deleteCertificate() {
+//    }
+//
+//    @Test
+//    void addCertificateTags() {
+//    }
 
 
 }

@@ -4,20 +4,14 @@ import com.epam.esm.data.GiftCertificateCreateDto;
 import com.epam.esm.data.GiftCertificateDto;
 import com.epam.esm.db.data.GiftCertificate;
 import com.epam.esm.db.data.Tag;
-import com.epam.esm.db.service.DAOException;
-import com.epam.esm.db.service.GiftCertificateDAO;
-import com.epam.esm.db.service.TagDAO;
+import com.epam.esm.db.service.*;
 import com.epam.esm.service.GiftCertificatesService;
-import com.epam.esm.service.exceptions.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,92 +29,86 @@ public class GiftCertificateServiceImpl implements GiftCertificatesService {
     @Override
     public List<GiftCertificateDto> getAllCertificates() {
 
+
         List<GiftCertificate> giftCertificates = giftCertificateDAO.findAll();
         return giftCertificates.stream()
-                .map(gc -> new GiftCertificateDto(
-                        gc.getId(),
-                        gc.getName(),
-                        gc.getDescription(),
-                        gc.getPrice(),
-                        gc.getCreateDate(),
-                        gc.getLastUpdateTime(),
-                        gc.getDuration(),
-                        tagDAO.findAllCertificateTags(gc.getId())
-                ))
+                .map(gc ->  CertificateBuilder.buildCertificateDto(gc,tagDAO.findAllCertificateTags(gc.getId())))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public GiftCertificateDto findById(Long id) throws EntityNotFoundException {
+    public List<GiftCertificateDto> findCertificatesByCriteria(Map<CertificateSearchCriteria, String> criteriaMap, List<CertificateSortCriteria> sortCriteria) {
 
-        Optional<GiftCertificate> giftCertificate = Optional.of(giftCertificateDAO.findById(id))
-                .orElseThrow(() -> new EntityNotFoundException(String.format("certificate with id=%s not found", id)));
-        return certificateBuilder(giftCertificate.get());
+        List<GiftCertificate> giftCertificates = giftCertificateDAO.findAllWithCriteria(criteriaMap,sortCriteria);
+
+        return giftCertificates.stream()
+                .map(gc ->  CertificateBuilder.buildCertificateDto(gc,tagDAO.findAllCertificateTags(gc.getId())))
+                .collect(Collectors.toList());
+
     }
 
     @Override
+    public GiftCertificateDto findById(Long id) throws DAOException {
+
+       //Dao throws EntityNotFoundException
+       GiftCertificate giftCertificate = giftCertificateDAO.findById(id).get();
+
+        return CertificateBuilder.buildCertificateDto(giftCertificate,tagDAO.findAllCertificateTags(giftCertificate.getId()));
+    }
+
+
+    @Override
+    @Transactional
     public void createCertificate(GiftCertificateCreateDto giftCertificateCreateDto) throws DAOException {
 
-        GiftCertificate gc = createNewCertificate(giftCertificateCreateDto);
+        GiftCertificate gc = CertificateBuilder.buildGiftCertificateFromCreationDto(giftCertificateCreateDto);
         gc.setId(giftCertificateDAO.createEntity(gc));
-        for (Tag tag : giftCertificateCreateDto.getTags()) {
-            Optional<Tag> optionalTag = tagDAO.findByName(tag.getName());
-            if (optionalTag.isPresent()){
-                tag.setId(optionalTag.get().getId());
-            }
-            else {
-                tag.setId(tagDAO.createEntity(tag));
-            }
-        }
+        createTagsIfNotExist(giftCertificateCreateDto.getTags());
         giftCertificateDAO.addCertificateTags(giftCertificateCreateDto.getTags(), gc.getId());
     }
 
-    public void removeCertificate(GiftCertificateDto giftCertificateDto) {
+    @Override
+    @Transactional
+    public void removeCertificate(Long id) throws DAOException {
+
+        Optional<GiftCertificate> optionalGiftCertificate = giftCertificateDAO.findById(id);
+        if (optionalGiftCertificate.isPresent()) {
+            giftCertificateDAO.deleteCertificate(optionalGiftCertificate.get());
+        } else {
+            throw new DAOException(String.format("certificate with id=%s not found", id));
+        }
 
     }
 
-    private GiftCertificate createNewCertificate(GiftCertificateCreateDto giftCertificateCreateDto) {
+    @Override
+    @Transactional
+    public void updateCertificate(GiftCertificateCreateDto giftCertificateCreateDto, Long id) throws DAOException {
 
+        GiftCertificate newCertificate = giftCertificateDAO.findById(id).get();
+        newCertificate.setName(giftCertificateCreateDto.getName());
+        newCertificate.setDescription(giftCertificateCreateDto.getDescription());
+        newCertificate.setPrice(giftCertificateCreateDto.getPrice());
+        newCertificate.setDuration(giftCertificateCreateDto.getDuration());
         Date currentDate = new Date();
         Timestamp currentDateTimestamp = new Timestamp(currentDate.getTime());
+        newCertificate.setLastUpdateTime(currentDateTimestamp);
 
-        GiftCertificate gc = new GiftCertificate();
-        gc.setName(giftCertificateCreateDto.getName());
-        gc.setDescription(giftCertificateCreateDto.getDescription());
-        gc.setPrice(giftCertificateCreateDto.getPrice());
-        gc.setCreateDate(currentDateTimestamp);
-        gc.setLastUpdateTime(currentDateTimestamp);
-        gc.setDuration(giftCertificateCreateDto.getDuration());
-
-        return gc;
-    }
-
-    private GiftCertificateDto certificateBuilder(GiftCertificate gc) {
-
-        return new GiftCertificateDto(
-                gc.getId(),
-                gc.getName(),
-                gc.getDescription(),
-                gc.getPrice(),
-                gc.getCreateDate(),
-                gc.getLastUpdateTime(),
-                gc.getDuration(),
-                tagDAO.findAllCertificateTags(gc.getId()));
-    }
-
-    private GiftCertificate certificateFromDtoBuilder(GiftCertificateDto gcd) {
-
-        return new GiftCertificate(
-                gcd.getId(),
-                gcd.getName(),
-                gcd.getDescription(),
-                gcd.getPrice(),
-                gcd.getCreateDate(),
-                gcd.getLastUpdateTime(),
-                gcd.getDuration()
-        );
+        giftCertificateDAO.updateCertificate(newCertificate);
+        createTagsIfNotExist(giftCertificateCreateDto.getTags());
+        giftCertificateDAO.updateCertificateTags(id, giftCertificateCreateDto.getTags());
 
     }
 
+    private void createTagsIfNotExist(List<Tag> tags) throws DAOException {
+
+        for (Tag tag : tags) {
+            Optional<Tag> optionalTag = tagDAO.findByName(tag.getName());
+            if (optionalTag.isPresent()) {
+                tag.setId(optionalTag.get().getId());
+            } else {
+                tag.setId(tagDAO.createEntity(tag));
+            }
+        }
+    }
 
 }

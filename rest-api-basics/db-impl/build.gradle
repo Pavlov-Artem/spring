@@ -7,20 +7,16 @@ dependencies {
     // https://mvnrepository.com/artifact/mysql/mysql-connector-java
     compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.20'
 
+    compile group: 'org.springframework', name: 'spring-context', version: springVersion
+    compile project(":db-api")
 
-    // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
-    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.7.0'
+    testCompile('org.junit.jupiter:junit-jupiter:5.6.0')
     // https://mvnrepository.com/artifact/com.h2database/h2
     testCompile group: 'com.h2database', name: 'h2', version: '1.4.200'
 
-    testCompile group: 'org.springframework', name: 'spring-test', version: springVersion
 
-
-    compile group: 'org.springframework', name: 'spring-context', version: springVersion
-    compile project(":db-api")
 }
 
 test {
     useJUnitPlatform()
-
 }

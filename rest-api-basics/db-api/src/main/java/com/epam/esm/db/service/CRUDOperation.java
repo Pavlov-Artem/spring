@@ -14,9 +14,9 @@ public interface CRUDOperation<T> {
 
     Long createEntity(T entity) throws DAOException;
 
-    Optional<T> findById(Long id);
+    Optional<T> findById(Long id) throws DAOException;
 
-    void updateCertificate(T entity);
+    void updateCertificate(T entity) throws DAOException;
 
     void deleteCertificate(T entity) throws DAOException;
 

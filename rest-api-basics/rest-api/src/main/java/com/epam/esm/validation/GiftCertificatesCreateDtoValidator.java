@@ -29,7 +29,7 @@ public class GiftCertificatesCreateDtoValidator implements Validator<GiftCertifi
 
         BigDecimal minPrice = new BigDecimal("0.1");
 
-        return price.compareTo(minPrice) < 0 ? String.format("summ can't be less than %s", minPrice.toString()) : "";
+        return price.compareTo(minPrice) < 0 ? String.format("price can't be less than %s", minPrice.toString()) : "";
 
     }
 

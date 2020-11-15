@@ -3,11 +3,12 @@ package com.epam.esm.db.service.impl;
 import com.epam.esm.db.data.Tag;
 import com.epam.esm.db.service.DAOException;
 import com.epam.esm.db.service.TagDAO;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
@@ -16,11 +17,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.epam.esm.db.service.impl.DAOConstants.TAG_TABLE;
 
-@Component
+
+@Repository
 public class TagDAOImpl implements TagDAO {
 
-    private static final String TABLE_NAME = "tag";
     private RowMapper<Tag> rowMapper;
     private JdbcTemplate jdbcTemplate;
 
@@ -33,21 +35,26 @@ public class TagDAOImpl implements TagDAO {
     @Override
     public Optional<Tag> findByName(String name) {
 
-        String query = String.format("select * from `%s` where name=?", TABLE_NAME);
-        return Optional.ofNullable(jdbcTemplate.queryForObject(query, rowMapper));
+        String query = String.format("select * from `%s` where name=?", TAG_TABLE);
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(query, rowMapper, name));
+        } catch (DataAccessException ex) {
+            return Optional.empty();
+        }
+
     }
 
     @Override
     public List<Tag> findAll() {
 
-        String query = String.format("select * from `%s`", TABLE_NAME);
+        String query = String.format("select * from `%s`", TAG_TABLE);
         return new ArrayList<>(jdbcTemplate.query(query, rowMapper));
     }
 
     @Override
     public Long createEntity(Tag entity) throws DAOException {
 
-        String query = "insert into " + TABLE_NAME + " (name) values(?)";
+        String query = "insert into " + TAG_TABLE + " (name) values(?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
@@ -59,7 +66,6 @@ public class TagDAOImpl implements TagDAO {
 
         Optional<Number> optionalKey = Optional.ofNullable(keyHolder.getKey());
         long generatedId = optionalKey.orElseThrow(() -> {
-            //LOGGER.info("Employer entity hasn't created in database");
             return new DAOException("ID hasn't generated in database");
         }).longValue();
         entity.setId(generatedId);
@@ -69,21 +75,23 @@ public class TagDAOImpl implements TagDAO {
     @Override
     public Optional<Tag> findById(Long id) {
 
-        String query = String.format("select * from `%s` where id=`%s`", TABLE_NAME, id);
+        String query = String.format("select * from `%s` where id=%s", TAG_TABLE, id);
         return Optional.ofNullable(jdbcTemplate.queryForObject(query, rowMapper, id));
 
     }
 
+    /**
+     * not using
+     */
     @Override
     public void updateCertificate(Tag entity) {
-
-
     }
+
 
     @Override
     public void deleteCertificate(Tag entity) throws DAOException {
 
-        String query = String.format("delete from `%s` where id=?", TABLE_NAME);
+        String query = String.format("delete from `%s` where id=?", TAG_TABLE);
         int rowsAffected = jdbcTemplate.update(query, entity.getId());
         if (rowsAffected == 0) {
             throw new DAOException(String.format("certificate with id=`%s` wasn't delete", entity.getId()));

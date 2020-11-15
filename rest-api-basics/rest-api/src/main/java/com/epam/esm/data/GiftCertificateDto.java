@@ -5,6 +5,7 @@ import com.epam.esm.db.data.Tag;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -14,25 +15,16 @@ public class GiftCertificateDto {
     private String name;
     private String description;
     private BigDecimal price;
-    private Timestamp createDate;
-    private Timestamp lastUpdateTime;
+    private String createDate;
+    private String lastUpdateTime;
     private int duration;
     private List<Tag> tags = new ArrayList<>();
 
     public GiftCertificateDto() {
     }
 
-    public GiftCertificateDto(Long id, String name, String description, BigDecimal price, Timestamp createDate, Timestamp lastUpdateTime, int duration) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.price = price;
-        this.createDate = createDate;
-        this.lastUpdateTime = lastUpdateTime;
-        this.duration = duration;
-    }
 
-    public GiftCertificateDto(Long id, String name, String description, BigDecimal price, Timestamp createDate, Timestamp lastUpdateTime, int duration, List<Tag> tags) {
+    public GiftCertificateDto(Long id, String name, String description, BigDecimal price, String createDate, String lastUpdateTime, int duration, List<Tag> tags) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -42,6 +34,8 @@ public class GiftCertificateDto {
         this.duration = duration;
         this.tags = tags;
     }
+
+
 
     public Long getId() {
         return id;
@@ -75,19 +69,19 @@ public class GiftCertificateDto {
         this.price = price;
     }
 
-    public Timestamp getCreateDate() {
+    public String getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(Timestamp createDate) {
+    public void setCreateDate(String createDate) {
         this.createDate = createDate;
     }
 
-    public Timestamp getLastUpdateTime() {
+    public String getLastUpdateTime() {
         return lastUpdateTime;
     }
 
-    public void setLastUpdateTime(Timestamp lastUpdateTime) {
+    public void setLastUpdateTime(String lastUpdateTime) {
         this.lastUpdateTime = lastUpdateTime;
     }
 
