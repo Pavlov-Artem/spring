@@ -7,9 +7,7 @@ import com.epam.esm.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,7 +18,7 @@ public class TagRestController {
     private TagService tagService;
 
     @GetMapping("/tags")
-    public ResponseEntity<List<Tag>> getAll(){
+    public ResponseEntity<List<Tag>> getAll() {
 
         return ResponseEntity.status(HttpStatus.OK).body(tagService.getAllTags());
 
@@ -30,6 +28,22 @@ public class TagRestController {
     public ResponseEntity<Tag> getById(@PathVariable Long id) throws DAOException {
 
         return ResponseEntity.status(HttpStatus.OK).body(tagService.findTagById(id));
+
+    }
+
+    @PostMapping("/tags")
+    public ResponseEntity<String> createTag(@RequestBody Tag tag) throws DAOException {
+
+        tagService.createTag(tag);
+        return ResponseEntity.status(HttpStatus.CREATED).body("tag was created");
+
+    }
+
+    @DeleteMapping("/tags/{id}")
+    public ResponseEntity<String> removeTag(@PathVariable Long id) throws DAOException {
+
+        tagService.removeTag(id);
+        return ResponseEntity.status(HttpStatus.OK).body(String.format("tag with id:%s was removed", id));
 
     }
 

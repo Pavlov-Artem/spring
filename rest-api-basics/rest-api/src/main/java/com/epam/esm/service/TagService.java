@@ -11,8 +11,8 @@ public interface TagService {
 
     Tag findTagById(Long id) throws DAOException;
 
-    void createTag(Tag tag);
+    void createTag(Tag tag) throws DAOException;
 
-    void removeTag(Long id);
+    void removeTag(Long id) throws DAOException;
 
 }

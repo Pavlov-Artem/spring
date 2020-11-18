@@ -4,6 +4,8 @@ import com.epam.esm.db.service.exceptions.EntityNotFoundDaoException;
 import com.epam.esm.rest.exceptions.InvalidInputParametersException;
 import com.epam.esm.service.exceptions.EntityNotFoundException;
 import com.epam.esm.validation.ValidationException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -29,6 +31,8 @@ import java.util.List;
 @ControllerAdvice
 public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
 
+
+    private static final Logger logger = LogManager.getLogger(CustomRestExceptionHandler.class);
     // 400
 
     @Override
@@ -118,8 +122,8 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<Object> handleValidationException(final ValidationException ex) {
 
-        String errorsList = String.join("\n", ex.getValidationResult().getErrorMessages());
-        final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "wrong input data", errorsList);
+//        String errorsList = String.join("\n", ex.getValidationResult().getErrorMessages());
+        final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "wrong input data", ex.getValidationResult().getErrorMessages());
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
 
     }
@@ -160,7 +164,7 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
         ex.getSupportedHttpMethods().forEach(t -> builder.append(t + " "));
 
         final ApiError apiError = new ApiError(HttpStatus.METHOD_NOT_ALLOWED, ex.getMessage(), builder.toString());
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+        return new ResponseEntity<>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 
     // 415
@@ -184,8 +188,8 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleAll(final Exception ex, final WebRequest request) {
         logger.info(ex.getClass().getName());
         logger.error("error", ex);
-        //
-        final ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), "error occurred");
+
+        final ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, "internal server error", "error occurred");
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 

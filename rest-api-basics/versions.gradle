@@ -5,7 +5,7 @@ ext {
     mockitoVersion = '2.7.21'
     junitVersion = '4.12'
     javaxPersistenceVersion = '1.0'
-    log4jVersion = '2.5'
+    log4jVersion = '2.13.3'
     apacheCommonsLangVersion = '3.11'
     jerseyVersion = '1.18'    
     hikariCPVersion = '3.4.5'

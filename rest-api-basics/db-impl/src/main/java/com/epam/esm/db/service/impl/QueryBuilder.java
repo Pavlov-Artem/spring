@@ -116,10 +116,12 @@ class QueryBuilder {
     private static String buildSortPart(List<CertificateSortCriteria> sortCriteria) {
 
         boolean firstCondition = false;
-        StringBuilder sortPart = new StringBuilder("ORDER BY ");
+        StringBuilder sortPart = new StringBuilder();
         for (CertificateSortCriteria csc : sortCriteria) {
             if (firstCondition) {
                 sortPart.append(", ");
+            } else {
+                sortPart.append(" ORDER BY ");
             }
 
             if (csc.equals(CertificateSortCriteria.NAME_ASC)) {
@@ -136,7 +138,7 @@ class QueryBuilder {
                         .append(" ")
                         .append(ASC);
             } else if (csc.equals(CertificateSortCriteria.PRICE_DESC)) {
-                sortPart.append(CertificateSortCriteria.PRICE_DESC)
+                sortPart.append(DAOConstants.GC_PRICE)
                         .append(" ")
                         .append(DESC);
             }

@@ -5,9 +5,11 @@ import com.epam.esm.db.service.DAOException;
 import com.epam.esm.db.service.TagDAO;
 import com.epam.esm.db.service.exceptions.EntityNotFoundDaoException;
 import com.epam.esm.service.TagService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+
 
 public class TagServiceImpl implements TagService {
 
@@ -35,12 +37,20 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public void createTag(Tag tag) {
+    public void createTag(Tag tag) throws DAOException {
+
+        tagDAO.createEntity(tag);
 
     }
 
     @Override
-    public void removeTag(Long id) {
+    public void removeTag(Long id) throws DAOException {
 
+        Optional<Tag> tag = tagDAO.findById(id);
+        if (tag.isPresent()) {
+            tagDAO.deleteCertificate(tag.get());
+        } else {
+            throw new EntityNotFoundDaoException("cannot remove tag because tag with such id doen't exist", id);
+        }
     }
 }

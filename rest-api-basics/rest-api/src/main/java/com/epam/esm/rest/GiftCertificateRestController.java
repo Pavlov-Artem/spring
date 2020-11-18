@@ -31,6 +31,7 @@ public class GiftCertificateRestController {
      * path ...host/certificates?search_param=value
      * available search params:
      * can be used in lower case
+     *
      * @BY_TAG search certificate by tag name,
      * @BY_NAME_PART search certificate by part of name,
      * @BY_DESCRIPTION_PART search certificate by part of description;
@@ -45,7 +46,7 @@ public class GiftCertificateRestController {
 
         return params.isEmpty() ? giftCertificatesService.getAllCertificates()
                 : giftCertificatesService.findCertificatesByCriteria(
-                        GiftCertificateQueryParametersMapper.mapSearchParams(params), GiftCertificateQueryParametersMapper.mapSortCriteria(params));
+                GiftCertificateQueryParametersMapper.mapSearchParams(params), GiftCertificateQueryParametersMapper.mapSortCriteria(params));
 
     }
 
@@ -60,10 +61,8 @@ public class GiftCertificateRestController {
 
     @PutMapping("/certificates/{id}")
     public ResponseEntity<String> updateCertificate(@RequestBody GiftCertificateCreateDto giftCertificateCreateDto, @PathVariable Long id) throws DAOException {
-
         giftCertificatesService.updateCertificate(giftCertificateCreateDto, id);
         return ResponseEntity.status(HttpStatus.CREATED).body("updated successfully");
-
     }
 
     @PutMapping("/certificates")

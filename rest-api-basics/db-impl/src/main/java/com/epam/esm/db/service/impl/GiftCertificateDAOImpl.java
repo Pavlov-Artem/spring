@@ -7,6 +7,8 @@ import com.epam.esm.db.service.CertificateSortCriteria;
 import com.epam.esm.db.service.DAOException;
 import com.epam.esm.db.service.GiftCertificateDAO;
 import com.epam.esm.db.service.exceptions.EntityNotFoundDaoException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -26,6 +28,8 @@ import static com.epam.esm.db.service.impl.DAOConstants.CERTIFICATE_TABLE;
 
 @Repository
 public class GiftCertificateDAOImpl implements GiftCertificateDAO {
+
+    private static final Logger LOGGER = LogManager.getLogger(GiftCertificateDAOImpl.class);
 
     private RowMapper<GiftCertificate> rowMapper;
     private JdbcTemplate jdbcTemplate;
@@ -71,7 +75,10 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
         }, keyHolder);
 
         Optional<Number> optionalKey = Optional.ofNullable(keyHolder.getKey());
-        long generatedId = optionalKey.orElseThrow(() -> new DAOException("ID hasn't generated in database")).longValue();
+        long generatedId = optionalKey.orElseThrow(() -> {
+            LOGGER.error("ID hasn't generated in database");
+            return new DAOException("ID hasn't generated in database");
+        }).longValue();
         entity.setId(generatedId);
         return entity.getId();
 
@@ -84,7 +91,9 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(query, rowMapper));
         } catch (Exception ex) {
-            throw new EntityNotFoundDaoException("certificate not found ", id);
+            String errorMessage = "certificate not found id=" + id;
+            LOGGER.error(errorMessage);
+            throw new EntityNotFoundDaoException(errorMessage, id);
         }
 
     }
@@ -95,7 +104,9 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
         GiftCertificate oldCertificate = findById(entity.getId()).get();
         String query = QueryBuilder.updateChangedCertificateRowsBuilder(oldCertificate, entity);
         if (jdbcTemplate.update(query) < 1) {
-            throw new DAOException("certificate wasn't update");
+            String errorMessage = "certificate wasn't update";
+            LOGGER.error(errorMessage);
+            throw new DAOException(errorMessage);
         }
     }
 
@@ -125,10 +136,13 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     @Override
     public void deleteCertificate(GiftCertificate entity) throws DAOException {
 
+        removeCertificateTags(entity.getId());
         String query = String.format("delete from `%s` where id=?", CERTIFICATE_TABLE);
         int rowsAffected = jdbcTemplate.update(query, entity.getId());
         if (rowsAffected == 0) {
-            throw new DAOException(String.format("certificate with id=`%s` wasn't delete", entity.getId()));
+            String errorMessage = String.format("certificate with id=`%s` wasn't delete", entity.getId());
+            LOGGER.error(errorMessage);
+            throw new DAOException(errorMessage);
         }
         removeCertificateTags(entity.getId());
     }

@@ -75,7 +75,7 @@ public class TagDAOImpl implements TagDAO {
     @Override
     public Optional<Tag> findById(Long id) {
 
-        String query = String.format("select * from `%s` where id=%s", TAG_TABLE, id);
+        String query = String.format("select * from `%s` where id=?", TAG_TABLE);
         return Optional.ofNullable(jdbcTemplate.queryForObject(query, rowMapper, id));
 
     }
