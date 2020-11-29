@@ -6,14 +6,15 @@ import com.epam.esm.db.data.GiftCertificate;
 import com.epam.esm.db.data.Tag;
 import com.epam.esm.db.service.*;
 import com.epam.esm.service.GiftCertificatesService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,28 +36,26 @@ public class GiftCertificateServiceImpl implements GiftCertificatesService {
 
         List<GiftCertificate> giftCertificates = giftCertificateDAO.findAll();
         return giftCertificates.stream()
-                .map(gc ->  CertificateBuilder.buildCertificateDto(gc,tagDAO.findAllCertificateTags(gc.getId())))
+                .map(gc -> CertificateBuilder.buildCertificateDto(gc, tagDAO.findAllCertificateTags(gc.getId())))
                 .collect(Collectors.toList());
     }
 
     @Override
     public List<GiftCertificateDto> findCertificatesByCriteria(Map<CertificateSearchCriteria, String> criteriaMap, List<CertificateSortCriteria> sortCriteria) {
 
-        List<GiftCertificate> giftCertificates = giftCertificateDAO.findAllWithCriteria(criteriaMap,sortCriteria);
+        List<GiftCertificate> giftCertificates = giftCertificateDAO.findAllWithCriteria(criteriaMap, sortCriteria);
 
         return giftCertificates.stream()
-                .map(gc ->  CertificateBuilder.buildCertificateDto(gc,tagDAO.findAllCertificateTags(gc.getId())))
+                .map(gc -> CertificateBuilder.buildCertificateDto(gc, tagDAO.findAllCertificateTags(gc.getId())))
                 .collect(Collectors.toList());
 
     }
 
     @Override
     public GiftCertificateDto findById(Long id) throws DAOException {
-
-       //Dao throws EntityNotFoundException
-       GiftCertificate giftCertificate = giftCertificateDAO.findById(id).get();
-
-        return CertificateBuilder.buildCertificateDto(giftCertificate,tagDAO.findAllCertificateTags(giftCertificate.getId()));
+        //Dao throws EntityNotFoundException
+        GiftCertificate giftCertificate = giftCertificateDAO.findById(id).get();
+        return CertificateBuilder.buildCertificateDto(giftCertificate, tagDAO.findAllCertificateTags(giftCertificate.getId()));
     }
 
 

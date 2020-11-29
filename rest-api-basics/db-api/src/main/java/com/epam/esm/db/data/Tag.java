@@ -1,10 +1,21 @@
 package com.epam.esm.db.data;
 
+import com.epam.esm.db.DAOConstants;
+import org.springframework.hateoas.RepresentationModel;
+
+import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Tag {
+@Entity
+@Table(name = DAOConstants.TAG_TABLE)
+public class Tag extends RepresentationModel<Tag> implements Serializable {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = DAOConstants.TAG_ID)
     private Long id;
+    @Column(name = DAOConstants.TAG_NAME, nullable = false)
     private String name;
 
     public Tag() {

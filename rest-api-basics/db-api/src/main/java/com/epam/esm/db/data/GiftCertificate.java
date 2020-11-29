@@ -1,6 +1,6 @@
 package com.epam.esm.db.data;
 
-import com.epam.esm.db.service.DAOConstants;
+import com.epam.esm.db.DAOConstants;
 import org.springframework.hateoas.RepresentationModel;
 
 import javax.persistence.*;
@@ -30,7 +30,7 @@ public class GiftCertificate extends RepresentationModel<GiftCertificate> implem
     private Timestamp lastUpdateTime;
     @Column(name = DAOConstants.GC_DURATION)
     private int duration;
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
     @JoinTable(name = DAOConstants.CERTIFICATE_TAG_TABLE,
             //Certificate foreign key
             joinColumns = @JoinColumn(name = DAOConstants.CT_CERTIFICATE_ID),
