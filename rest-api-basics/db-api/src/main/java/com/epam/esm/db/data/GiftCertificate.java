@@ -1,18 +1,42 @@
 package com.epam.esm.db.data;
 
+import com.epam.esm.db.service.DAOConstants;
+import org.springframework.hateoas.RepresentationModel;
+
+import javax.persistence.*;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Objects;
 
-public class GiftCertificate {
+@Entity
+@Table(name = DAOConstants.CERTIFICATE_TABLE)
+public class GiftCertificate extends RepresentationModel<GiftCertificate> implements Serializable {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = DAOConstants.GC_ID)
     private Long id;
+    @Column(name = DAOConstants.GC_NAME, nullable = false)
     private String name;
+    @Column(name = DAOConstants.GC_DESCRIPTION)
     private String description;
+    @Column(name = DAOConstants.GC_PRICE)
     private BigDecimal price;
+    @Column(name = DAOConstants.GC_CREATE_DATE)
     private Timestamp createDate;
+    @Column(name = DAOConstants.GC_LAST_UPDATE_DATE)
     private Timestamp lastUpdateTime;
+    @Column(name = DAOConstants.GC_DURATION)
     private int duration;
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = DAOConstants.CERTIFICATE_TAG_TABLE,
+            //Certificate foreign key
+            joinColumns = @JoinColumn(name = DAOConstants.CT_CERTIFICATE_ID),
+            //Tag foreign key
+            inverseJoinColumns = @JoinColumn(name = DAOConstants.CT_TAG_ID))
+    private List<Tag> certificateTags;
 
 
     public GiftCertificate() {
@@ -28,6 +52,15 @@ public class GiftCertificate {
         this.duration = duration;
     }
 
+    public GiftCertificate(String name, String description, BigDecimal price, Timestamp createDate, Timestamp lastUpdateTime, int duration, List<Tag> certificateTags) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.createDate = createDate;
+        this.lastUpdateTime = lastUpdateTime;
+        this.duration = duration;
+        this.certificateTags = certificateTags;
+    }
 
     public Long getId() {
         return id;
@@ -83,6 +116,14 @@ public class GiftCertificate {
 
     public void setDuration(int duration) {
         this.duration = duration;
+    }
+
+    public List<Tag> getCertificateTags() {
+        return certificateTags;
+    }
+
+    public void setCertificateTags(List<Tag> certificateTags) {
+        this.certificateTags = certificateTags;
     }
 
     @Override
