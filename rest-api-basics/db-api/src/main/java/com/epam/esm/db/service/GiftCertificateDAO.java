@@ -2,10 +2,12 @@ package com.epam.esm.db.service;
 
 import com.epam.esm.db.data.GiftCertificate;
 import com.epam.esm.db.data.Tag;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
 
+@Repository
 public interface GiftCertificateDAO extends CRUDOperation<GiftCertificate> {
 
     List<GiftCertificate> findAll();

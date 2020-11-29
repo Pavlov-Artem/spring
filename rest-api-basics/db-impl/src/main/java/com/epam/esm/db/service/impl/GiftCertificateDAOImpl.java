@@ -35,14 +35,12 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     private JdbcTemplate jdbcTemplate;
 
     public GiftCertificateDAOImpl(DataSource dataSource) {
-
         jdbcTemplate = new JdbcTemplate(dataSource);
         setRowMapper();
     }
 
     @Override
     public List<GiftCertificate> findAll() {
-
         String query = String.format("select * from `%s`", CERTIFICATE_TABLE);
         return new ArrayList<>(jdbcTemplate.query(query, rowMapper));
     }
@@ -50,7 +48,6 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
 
     @Override
     public List<GiftCertificate> findAllWithCriteria(Map<CertificateSearchCriteria, String> searchCriteria, List<CertificateSortCriteria> sortCriteria) {
-
         String query = QueryBuilder.buildCompoundQuery(searchCriteria, sortCriteria);
         return new ArrayList<>(jdbcTemplate.query(query, rowMapper));
     }
@@ -81,7 +78,6 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
         }).longValue();
         entity.setId(generatedId);
         return entity.getId();
-
     }
 
     @Override

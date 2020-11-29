@@ -6,6 +6,8 @@ import com.epam.esm.db.data.GiftCertificate;
 import com.epam.esm.db.data.Tag;
 import com.epam.esm.db.service.*;
 import com.epam.esm.service.GiftCertificatesService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,7 @@ import java.util.stream.Collectors;
 @Service
 @EnableTransactionManagement
 public class GiftCertificateServiceImpl implements GiftCertificatesService {
+
 
     private GiftCertificateDAO giftCertificateDAO;
     private TagDAO tagDAO;
