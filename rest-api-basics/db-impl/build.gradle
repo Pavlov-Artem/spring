@@ -1,0 +1,37 @@
+dependencies {
+
+    compile project("db-api")
+    compile project(":rest-api")
+
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-jpa
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: '2.4.0'
+
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-test-autoconfigure
+    compile group: 'org.springframework.boot', name: 'spring-boot-test-autoconfigure', version: '2.4.0'
+
+
+    // https://mvnrepository.com/artifact/com.zaxxer/HikariCP
+    compile group: 'com.zaxxer', name: 'HikariCP', version: hikariCPVersion
+    // https://mvnrepository.com/artifact/org.springframework/spring-jdbc
+    compile group: 'org.springframework', name: 'spring-jdbc', version: springVersion
+    // https://mvnrepository.com/artifact/mysql/mysql-connector-java
+    compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.20'
+
+    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: log4jVersion
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: log4jVersion
+
+    compile group: 'org.springframework', name: 'spring-context', version: springVersion
+    compile project(":db-api")
+
+    runtime('com.h2database:h2')
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile('org.junit.jupiter:junit-jupiter:5.6.0')
+
+//    testCompile group: 'com.h2database', name: 'h2', version: '1.4.200'
+
+
+}
+
+test {
+    useJUnitPlatform()
+}

@@ -1,0 +1,6 @@
+rootProject.name = 'spring'
+include 'rest-api'
+include 'db-api'
+include 'db-impl'
+include 'web-pack'
+

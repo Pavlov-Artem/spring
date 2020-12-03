@@ -1,0 +1,17 @@
+plugins {
+    id 'war'
+}
+
+dependencies {
+    compile group: 'org.springframework', name: 'spring-webmvc', version: springVersion
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: jacksonVersion
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jacksonVersion
+
+    compile project(":db-api")
+    compile project(":db-impl")
+    compile project(":rest-api")
+}
+
+test{
+    useJUnitPlatform()
+}
