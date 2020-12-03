@@ -9,4 +9,5 @@ ext {
     apacheCommonsLangVersion = '3.11'
     jerseyVersion = '1.18'    
     hikariCPVersion = '3.4.5'
+    springBootVesion = '2.4.0'
 }

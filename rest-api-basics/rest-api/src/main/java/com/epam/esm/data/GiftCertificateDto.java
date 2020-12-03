@@ -1,15 +1,16 @@
 package com.epam.esm.data;
 
 import com.epam.esm.db.data.Tag;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.RepresentationModel;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-public class GiftCertificateDto {
+public class GiftCertificateDto extends RepresentationModel<GiftCertificateDto> implements Serializable {
 
     private Long id;
     private String name;
@@ -23,7 +24,6 @@ public class GiftCertificateDto {
     public GiftCertificateDto() {
     }
 
-
     public GiftCertificateDto(Long id, String name, String description, BigDecimal price, String createDate, String lastUpdateTime, int duration, List<Tag> tags) {
         this.id = id;
         this.name = name;
@@ -35,7 +35,17 @@ public class GiftCertificateDto {
         this.tags = tags;
     }
 
-
+    public GiftCertificateDto(Link initialLink, Long id, String name, String description, BigDecimal price, String createDate, String lastUpdateTime, int duration, List<Tag> tags) {
+        super(initialLink);
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.createDate = createDate;
+        this.lastUpdateTime = lastUpdateTime;
+        this.duration = duration;
+        this.tags = tags;
+    }
 
     public Long getId() {
         return id;

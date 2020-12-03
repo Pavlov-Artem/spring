@@ -52,4 +52,55 @@ CREATE TABLE IF NOT EXISTS gift_certificate_has_tag (
 );
 
 
+-- CREATE TABLE IF NOT EXISTS `gift_certificates_db`.`user` (
+--   `id` BIGINT(19) NOT NULL AUTO_INCREMENT,
+--   `name` VARCHAR(100) NOT NULL,
+--   `email` VARCHAR(254) NOT NULL,
+--   PRIMARY KEY (`id`),
+--   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
+--   UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE)
+-- ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `gift_certificates_db`.`order`
+-- -----------------------------------------------------
+-- CREATE TABLE IF NOT EXISTS `gift_certificates_db`.`order` (
+--   `id` BIGINT(19) NOT NULL,
+--   `purchase_date` TIMESTAMP NOT NULL,
+--   `user_id` BIGINT(19) NOT NULL,
+--   PRIMARY KEY (`id`, `user_id`),
+--   INDEX `fk_order_user1_idx` (`user_id` ASC) VISIBLE,
+--   CONSTRAINT `fk_order_user1`
+--     FOREIGN KEY (`user_id`)
+--     REFERENCES `gift_certificates_db`.`user` (`id`)
+--     ON DELETE NO ACTION
+--     ON UPDATE NO ACTION)
+-- ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `gift_certificates_db`.`order_details`
+-- -----------------------------------------------------
+-- CREATE TABLE IF NOT EXISTS `gift_certificates_db`.`order_details` (
+--   `order_id` BIGINT(19) NOT NULL,
+--   `gift_certificate_id` BIGINT(19) NOT NULL,
+--   `cost` DECIMAL NOT NULL,
+--   PRIMARY KEY (`order_id`, `gift_certificate_id`),
+--   INDEX `fk_order_details_gift_certificate1_idx` (`gift_certificate_id` ASC) VISIBLE,
+--   CONSTRAINT `fk_order_details_order1`
+--     FOREIGN KEY (`order_id`)
+--     REFERENCES `gift_certificates_db`.`order` (`id`)
+--     ON DELETE NO ACTION
+--     ON UPDATE NO ACTION,
+--   CONSTRAINT `fk_order_details_gift_certificate1`
+--     FOREIGN KEY (`gift_certificate_id`)
+--     REFERENCES `gift_certificates_db`.`gift_certificate` (`id`)
+--     ON DELETE NO ACTION
+--     ON UPDATE NO ACTION)
+-- ENGINE = InnoDB;
+
+
+
+
 

@@ -45,17 +45,14 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
         return new ArrayList<>(jdbcTemplate.query(query, rowMapper));
     }
 
-
     @Override
     public List<GiftCertificate> findAllWithCriteria(Map<CertificateSearchCriteria, String> searchCriteria, List<CertificateSortCriteria> sortCriteria) {
         String query = QueryBuilder.buildCompoundQuery(searchCriteria, sortCriteria);
         return new ArrayList<>(jdbcTemplate.query(query, rowMapper));
     }
 
-
     @Override
     public Long createEntity(GiftCertificate entity) throws DAOException {
-
         String query = "insert into " + CERTIFICATE_TABLE + " (name,description,price,create_date,last_update_date,duration) values(?,?,?,?,?,?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -82,7 +79,6 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
 
     @Override
     public Optional<GiftCertificate> findById(Long id) throws DAOException {
-
         String query = String.format("select * from `%s` where id=%s", CERTIFICATE_TABLE, id);
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(query, rowMapper));
@@ -91,12 +87,10 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
             LOGGER.error(errorMessage);
             throw new EntityNotFoundDaoException(errorMessage, id);
         }
-
     }
 
     @Override
     public void updateCertificate(GiftCertificate entity) throws DAOException {
-
         GiftCertificate oldCertificate = findById(entity.getId()).get();
         String query = QueryBuilder.updateChangedCertificateRowsBuilder(oldCertificate, entity);
         if (jdbcTemplate.update(query) < 1) {
@@ -108,7 +102,6 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
 
     @Override
     public void updateCertificateTags(Long certificateId, List<Tag> tags) {
-
         String selectOldTags = "select tag_id from gift_certificate_has_tag where gift_certificate_id=?";
         List<Long> oldTags = jdbcTemplate.query(selectOldTags, (rs, rowNum) -> rs.getLong(1), certificateId);
         List<Long> newTags = tags.stream().map(Tag::getId).collect(Collectors.toList());
@@ -131,7 +124,6 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
 
     @Override
     public void deleteCertificate(GiftCertificate entity) throws DAOException {
-
         removeCertificateTags(entity.getId());
         String query = String.format("delete from `%s` where id=?", CERTIFICATE_TABLE);
         int rowsAffected = jdbcTemplate.update(query, entity.getId());
@@ -144,15 +136,12 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     }
 
     private void removeCertificateTags(Long certificateId) {
-
         String query = "delete from gift_certificate_has_tag where gift_certificate_id=?";
         jdbcTemplate.update(query, certificateId);
-
     }
 
     @Override
     public List<GiftCertificate> findCertificatesByTagName(String tagName) {
-
         String query = "select a.* from gift_certificate a  " +
                 "                join gift_certificate_has_tag gt  " +
                 "                on gt.gift_certificate_id = a.id  " +
@@ -161,19 +150,15 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
                 "                WHERE t.name IN (?)";
 
         return new ArrayList<>(jdbcTemplate.query(query, rowMapper, tagName));
-
     }
 
     @Override
     public void addCertificateTags(List<Tag> tags, Long id) {
-
         String query = "insert into gift_certificate_has_tag (gift_certificate_id,tag_id) values (?,?);";
         tags.forEach(tag -> jdbcTemplate.update(query, id, tag.getId()));
-
     }
 
     private void setRowMapper() {
-
         rowMapper = (rs, rowNum) -> {
             int i = 0;
             return new GiftCertificate(
