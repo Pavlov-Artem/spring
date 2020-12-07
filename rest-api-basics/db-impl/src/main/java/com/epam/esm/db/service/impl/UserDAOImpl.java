@@ -1,10 +1,11 @@
 package com.epam.esm.db.service.impl;
 
 import com.epam.esm.db.data.User;
-import com.epam.esm.db.service.CRUDOperations;
 import com.epam.esm.db.service.DAOException;
 import com.epam.esm.db.service.UserDAO;
 import com.epam.esm.db.service.exceptions.UnsupportedOperationException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
@@ -18,37 +19,25 @@ import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+
 @Repository
 @Transactional
 @Primary
 public class UserDAOImpl implements UserDAO {
 
+    private static final Logger LOGGER = LogManager.getLogger(UserDAOImpl.class);
+
     @PersistenceContext
     private EntityManager entityManager;
+    private final CommonJpaOperations<User> commonJpaOperations;
+
+    public UserDAOImpl(CommonJpaOperations<User> commonJpaOperations) {
+        this.commonJpaOperations = commonJpaOperations;
+    }
 
     @Override
     public List<User> findAll(Long pageSize, Long page) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        //getting count of all objects in db
-        CriteriaQuery<Long> countQuery = criteriaBuilder.createQuery(Long.class);
-        countQuery
-                .select(criteriaBuilder
-                        .count(countQuery.from(User.class)));
-        Long count = entityManager
-                .createQuery(countQuery)
-                .getSingleResult();
-
-        CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
-        Root<User> from = criteriaQuery.from(User.class);
-        CriteriaQuery<User> select = criteriaQuery.select(from);
-
-        TypedQuery<User> typedQuery = entityManager.createQuery(select);
-        while (page < count) {
-            typedQuery.setFirstResult((int) (page - 1L));
-            typedQuery.setMaxResults(Math.toIntExact(pageSize));
-            page += pageSize;
-        }
-        return typedQuery.getResultList();
+        return commonJpaOperations.findAllBasic(pageSize, page, User.class);
     }
 
     /**
