@@ -2,6 +2,7 @@ package com.epam.esm.db.data;
 
 import com.epam.esm.db.DAOConstants;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -22,8 +23,9 @@ public class Order implements Serializable {
     private Timestamp purchaseDate;
     @ManyToOne(targetEntity = User.class, fetch = FetchType.EAGER)
     private User user;
-    @OneToMany(targetEntity = OrderDetails.class, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = DAOConstants.ORDER_DETAILS_ORDER_ID)
+    @OneToMany(targetEntity = OrderDetails.class, mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JsonManagedReference
+//    @JoinColumn(name = DAOConstants.ORDER_DETAILS_ORDER_ID)
     private List<OrderDetails> orderDetails = new ArrayList<>();
 
     public Order(Timestamp purchaseDate, User user, List<OrderDetails> orderDetails) {

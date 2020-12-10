@@ -1,6 +1,7 @@
 package com.epam.esm.db.data;
 
 import com.epam.esm.db.DAOConstants;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -19,14 +20,16 @@ public class OrderDetails implements Serializable {
     @OneToOne(targetEntity = GiftCertificate.class, fetch = FetchType.EAGER)
     @JoinColumn(name = DAOConstants.ORDER_DETAILS_CERTIFICATE_ID, nullable = false, updatable = false)
     private GiftCertificate giftCertificate;
-//    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, optional = false)
-//    @JoinColumn(name = DAOConstants.ORDER_DETAILS_ORDER_ID, nullable = false, updatable = false)
-//    private Order order;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = DAOConstants.ORDER_DETAILS_ORDER_ID)
+    @JsonBackReference
+    private Order order;
+
 
     public OrderDetails(BigDecimal cost, GiftCertificate giftCertificate, Order order) {
         this.cost = cost;
         this.giftCertificate = giftCertificate;
-
+        this.order = order;
     }
 
     public OrderDetails() {
@@ -56,7 +59,13 @@ public class OrderDetails implements Serializable {
         this.giftCertificate = giftCertificate;
     }
 
+    public Order getOrder() {
+        return order;
+    }
 
+    public void setOrder(Order order) {
+        this.order = order;
+    }
 
     @Override
     public boolean equals(Object o) {

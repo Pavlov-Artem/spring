@@ -1,13 +1,14 @@
 package com.epam.esm.rest;
 
+import com.epam.esm.data.CreateOrderDto;
+import com.epam.esm.data.GiftCertificateCreateDto;
 import com.epam.esm.db.data.Order;
 import com.epam.esm.db.data.User;
+import com.epam.esm.db.service.DAOException;
 import com.epam.esm.service.OrderService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import sun.security.provider.certpath.OCSPResponse;
 
 import java.util.List;
@@ -24,4 +25,14 @@ public class OrdersRestController {
     public ResponseEntity<List<Order>> getAll(@RequestParam("size") Long pageSize, @RequestParam("page") Long page){
         return ResponseEntity.status(HttpStatus.OK).body(orderService.getAll(pageSize, page));
     }
+    @PostMapping(value = "/orders")
+    public ResponseEntity<Order> createOrder(@RequestBody CreateOrderDto createOrderDto) throws DAOException {
+        return ResponseEntity.status(HttpStatus.OK).body(orderService.createOrder(createOrderDto));
+    }
+    @DeleteMapping(value = "/orders/{id}" )
+    public ResponseEntity<String> removeOrder(@PathVariable("id") Long orderId) throws DAOException {
+        orderService.removeOrder(orderId);
+        return ResponseEntity.status(HttpStatus.OK).body(String.format("Order with id=%s was removed", orderId));
+    }
+
 }
